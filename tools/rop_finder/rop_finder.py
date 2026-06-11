@@ -1,40 +1,19 @@
 #!/usr/bin/env python3
 
 import sys
-from elf_loader import *
-from disassembler import *
-from gadget_scanner import *
 import os
+import argparse
+from core.elf_loader import *
+from core.disassembler import *
+from core.gadget_scanner import *
 from binaryornot.check import is_binary
+from core.display_res import display_output
 
-# Control if:
-#     - has between 1 [bin] and 2 [depth] args
-#     - depth is an int
-#     - if no input[depth] attribute 2 as 
-
-def input_control(args):
-    if len(args) < 2 or len(args) > 3 :
-        # control if file is elf x86 or x64
-        sys.stderr.write("Usage: ./rop_finder.py binary depth(optional)\n")
-        sys.exit(1)
-    if (len(args) == 3):
-        try:
-            depth = int(args[2])
-        except:
-            sys.stderr.write("Input [depth] is not an integer\n")
-            sys.exit(1)
-    else:
-        depth = 2
-    return depth
-
-# Control if:
+# Controls if:
 #     - file exists
 #     - file is binary
-
 def file_control(file):
-    if os.path.exists(file): 
-        print("The file exists") # test
-    else:
+    if not os.path.exists(file): 
         sys.stderr.write("The file does not exists.\n")
         exit(1)
     if not (is_binary(file)):
@@ -43,24 +22,32 @@ def file_control(file):
 
 
 def main():
-    depth = input_control(sys.argv)
-    file_control(sys.argv[1])
+    parser = argparse.ArgumentParser(description='ROP finder.')
+    parser.add_argument('binary', type=str, help='The elf binary to read')
+    parser.add_argument('-d', '--depth', type=int, default=3, metavar='', action='store', help='Choose depth for the gadgets lists')
+    parser.add_argument('-o', '--output', type=str, metavar='', action='store', help='Create an output.json')
+    args = parser.parse_args()
 
-    elf = process_elf(sys.argv[1])
+    file_control(args.binary)
+    elf = process_elf(args.binary)
     d = Disassembler(elf)
     instr_list = d.disas()
-    g_scan = GadgetScanner(instr_list, depth)
+
+    g_scan = GadgetScanner(instr_list, args.depth)
     gadget_list = g_scan.scan()
 
-    g_scan.print_gadgets(gadget_list)
+    display_output(args.output, gadget_list, g_scan)
 
 if __name__ == '__main__':
     main()
 
+
+
+
 # TO IMPROVE
-# handle other binaries
-# handle missing .text
-# handle CLI, use argparse to add proper flags like --depth, --output json, --arch
+# handle other binaries: already ARM, x86(64, 32)
+# handle CLI, add other flags ?
+
 # deduplicate gadgets (same instructions at different addresses)
 # filter out low quality gadgets (e.g. only a ret with nothing useful before)
 # search for specific patterns like pop rdi; ret specifically

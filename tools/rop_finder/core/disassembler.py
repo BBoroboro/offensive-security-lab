@@ -1,5 +1,5 @@
 from capstone import *
-from utils import *
+from .utils import *
 
 # class for disassembler to use capstone
 class   Disassembler:
@@ -14,4 +14,4 @@ class   Disassembler:
             instr_list.append(i)
             # print("0x%x:\t%s\t%s" %(i.address, i.mnemonic, i.op_str))
         return instr_list
-#  You can enable more detail with self.md.detail = True after creating the Cs instance. Not strictly necessary now, but useful later for the gadget scanner.
+#  can enable more detail with self.md.detail = True after creating the Cs instance.

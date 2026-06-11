@@ -1,8 +1,3 @@
-
-# scan all instructions
-# find ret and look at N instrucitons before
-# bundle them into a Gadget object
-
 mnemonic_list = ['ret', 'bx lr', 'pop \{pc\}']
 
 class   Gadget:
@@ -16,6 +11,12 @@ class   Gadget:
             result += ("\n\t0x%x:\t%s\t%s" %(instr.address, instr.mnemonic, instr.op_str))
         return f'At address: {hex(self.addr)} gadget is:{result}'
 
+    def to_dict(self):
+        dic = {"address": self.addr, "instructions":[]}
+        for instr in self.instructions:
+            dic["instructions"].append({"address": instr.address, "mnemonic": instr.mnemonic, "op_str": instr.op_str})
+        return dic
+
 class   GadgetScanner:
     def __init__(self, instr_list, depth):
         self.instr_list = instr_list
@@ -24,7 +25,10 @@ class   GadgetScanner:
     def scan(self):
         gadget_list = []
         for idx, instr in enumerate(self.instr_list):
-            ret_instruction = instr.mnemonic + " " + instr.op_str
+            if (len(instr.op_str) > 0): # in case of ARM
+                ret_instruction = instr.mnemonic + " " + instr.op_str
+            else:                       # in case of ASM
+                ret_instruction = instr.mnemonic
             if (ret_instruction in mnemonic_list):
                 depth = idx - self.depth
                 if(depth < 0):

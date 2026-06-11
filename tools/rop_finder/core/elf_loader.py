@@ -1,6 +1,6 @@
 from elftools.elf.elffile import ELFFile 
 from elftools.elf.segments import Segment
-from utils import *
+from .utils import *
 from capstone import *
 import sys
 
@@ -17,7 +17,7 @@ class   ELFLoader:
 def elf_control(file):
     for elfs in authorized_elf:
         if (elfs == file):
-            print("this elf is supported!") # test
+            # print("this elf is supported!") # test
             return
     print(f"This program does not support {file} yet") # change it to error ? Maybe no
     exit(1) # is it really an error?
@@ -31,8 +31,7 @@ def process_elf(filename):
                 sys.stderr.write("The binary is missing the .text section")
                 exit(1)
         # print(textSec.data()) # raw baytes of .text
-
-        print(hex(textSec.header.sh_addr)) # base address of .text
+        # print(hex(textSec.header.sh_addr)) # base address of .text, test
 
         elf_control(elffile.header.e_machine)
         # print(elffile.header.e_machine)
