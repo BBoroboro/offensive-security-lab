@@ -1,85 +1,55 @@
+# ROP Gadget Finder
 
+This ROP Gadget Finder is aiming at facilitating binaries analysis. Running it on your binary will help you develop ROP chains exploits. For now it supports x86, x64 and ARM, until further updates!
 
+# Installations
 
-Input: ELF x67 / ELF x64
-
-Output: Useful ROP gadgets used
-
-## Architecture
-
-rop_finder/
-│
-├── rop_finder.py        # CLI entrypoint
-├── elf_loader.py        # charge ELF + sections
-├── disassembler.py      # capstone wrapper
-├── gadget_scanner.py    # find patterns
-├── gadget_db.py         # stockage structuré
-└── utils.py
-
-## 1. ELF loader
-
-Responsible for:
-- read ELF
-- get .text
-- get base addresses
-
-Lib:
-- pyelftools
-
-## 2. Disassembly Engine
-
-Lib:
-- capstone
-
-Ex:
-```
-for insn in md.disasm(code, base):
-    print(insn.address, insn.mnemonic, insn.op_str)
+To run this program you'll first need to install the following frameworks:
+```txt
+    pip install binaryornot
+    pip3 install pyelftools
+    pip install capstone
 ```
 
-## 3. Gadget scanner (important part)
+# Usage
 
-Simple patterns:
-ret
-pop rdi; ret
-pop rsi ; pop r15 ; ret
-syscall
-
-## 4. Gadget representation
-
+This program can be launch running the following command:
+```txt
+    ./rop_finder.py your-binary
 ```
-class Gadget:
-    def __init__(self, addr, instructions):
-        self.addr = addr
-        self.instructions = instructions
-```
+It also support some flags to help you improve your analysis:
+```txt
+    usage: rop_finder.py [-h] [-d] [-o] [-f] binary
 
-## 5. CLI
+    ROP finder.
 
-Ex:
-```
-python rop_finder.py ./binary
+    positional arguments:
+    binary          The elf binary to read
+
+    options:
+    -h, --help      show this help message and exit
+    -d , --depth    Choose depth for the gadgets lists
+    -o , --output   Create an output.json
+    -f , --filter   Choose a gadget pattern
 ```
 
-Ouput:
-tri par type
-export JSON optionnel
+## Examples
 
+The following commands show you a few exemples on how you could run this program with flags:
+```txt
+    ./rop_finder.py --help
+    ./rop_finder.py [BINARY] --depth 3
+    ./rop_finder.py [BINARY] --output output_file
+    ./rop_finder.py [BINARY] --output output_file --depth 3
+    ./rop_finder.py [BINARY] --filter "pop {r4, r5, r6}"
+    ./rop_finder.py [BINARY] --output output_file --depth 8 --filter "pop {r4, r5, r6}"
+```
 
-## BONUS (to level up)
-filtre gadgets utiles only (skip junk)
-support ASLR offsets
-export pwntools-ready chain
-
-
-
-## requirements
-
-pip install binaryornot
-
-pip3 install pyelftools
-
-also capstone
- capstone is a programmatically disassembler, md is a CsInsn object — specifically, md is a Capstone disassembler instance that you create before disassembling and it needs
- the architecture (x86, ARM, MIPS...)
- the mode (32-bit or 64-bit)
+# Further improvment to come
+- Handle more binaries
+- Handle more flags to narrow down axploitation or filter out low quality gadgets
+- Handle deduplicate gadgets
+- gadget_db.py
+- ASLR offset support
+- Pwntools-ready chain export
+- Add docstrings to classes and methods

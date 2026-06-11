@@ -17,6 +17,14 @@ class   Gadget:
             dic["instructions"].append({"address": instr.address, "mnemonic": instr.mnemonic, "op_str": instr.op_str})
         return dic
 
+    def to_str(self):
+        i_list = []
+        for instr in self.instructions:
+            string = instr.mnemonic + " " + instr.op_str
+            i_list.append(string)
+        res = "; ".join(i_list)
+        return res
+
 class   GadgetScanner:
     def __init__(self, instr_list, depth):
         self.instr_list = instr_list
