@@ -16,3 +16,6 @@ see execve + fork + dup2 + waitpid
 
 - must recognizes if the program crashes
 
+
+TO SEND DIFFERENT INPUTS:
+ $'hello\nPOPOL'

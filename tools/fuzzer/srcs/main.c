@@ -38,7 +38,6 @@ static int parse_opt(int key, char *arg, struct argp_state *state) {
             a->input_file = arg;
             break;
         case 's':
-            // printf("seed is %s\n", arg);
             a->seed.input = arg;
             a->seed.size = strlen(arg);
             break;
@@ -64,7 +63,7 @@ int  copy_seed(t_seed *seed_copy, t_config *config) {
     seed_copy->input = malloc(seed_copy->size ? seed_copy->size : 1);
     if (!seed_copy->input) 
         return 1; // change later
-    memcpy(seed_copy->input, config->seed.input, sizeof(seed_copy->size));
+    memcpy(seed_copy->input, config->seed.input, seed_copy->size);
     return 0;
 }
 
@@ -76,8 +75,6 @@ int    ft_process(t_process *process, t_config *config, char **envp) {
 
         if (i >= 1) {
             mutate_seed(seed_copy);
-            // printf("seed is %s\n", config->seed.input); // test 
-            // printf("mutated seed is %s\n", seed_copy.input); // test
         }
 
         open_pipes(process);
@@ -117,11 +114,28 @@ int main(int ac, char** av, char** envp) {
     struct argp argp = { options, parse_opt, 0, "Mandatory flags: -t, -n, -i or -s", 0, 0, 0 };
 
     argp_parse(&argp, ac, av, 0, 0, &config);
-
-    check_file(config.target); // put in parse opt??
+    
     memset(&process, 0, sizeof(t_process)); 
 
-    ft_process(&process, &config, envp);
+    check_file(config.target); // put in parse opt??
+    if (config.input_file != NULL) {
+        check_file(config.input_file);
+        process.seed_file = fopen(config.input_file, "r"); // check i failed
+        printf("opening seed file\n"); // test
+
+        // int i = getline(&process.input_list, &process.list_size, process.seed_file);
+        int nread = 0;
+        while((nread = getline(&config.seed.input, &process.list_size, process.seed_file)) != -1) {
+            printf("seed is %s", config.seed.input);
+            config.seed.size = strlen(config.seed.input);
+            ft_process(&process, &config, envp);
+        }
+        
+        free(config.seed.input);
+        fclose(process.seed_file);
+    }
+    else
+        ft_process(&process, &config, envp);
 
     // ft_free_all(&data, &input);
 

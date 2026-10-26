@@ -7,10 +7,10 @@ void    open_pipes(t_process *process) {
     }
 }
 
-void    close_pipe(t_data *data) {
+// void    close_pipe(t_data *data) {
 
-    if (data->fds[0])
-        close(data->fds[0]);
-    if (data->fds[1])
-        close(data->fds[1]);
-}
+//     if (data->fds[0])
+//         close(data->fds[0]);
+//     if (data->fds[1])
+//         close(data->fds[1]);
+// }

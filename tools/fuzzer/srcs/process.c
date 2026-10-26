@@ -8,12 +8,15 @@
 
 
 void    save_crach(t_seed seed) { // not correct name
-    // char *str = input->input; //change
     FILE *file;
-    file = fopen("crash_res", "w"); // check if failed
-    // fprintf(file)
-    fputs("crahed!\n", file);
+
+    file = fopen("crash_1", "w"); // check if failed
+    fputs("The target program crahed!\n", file);
+    fputs("Input: ---", file);
     fwrite(seed.input, 1, seed.size, file);
+    fputs("---\n", file);
+    fputs("Length: ", file);
+    fprintf(file, "%ld", seed.size);
     fputs("\n------------\n", file);
     fclose(file);
 }
@@ -31,7 +34,7 @@ void    child_process(t_process *process, t_config *config, char **envp) {
 }
 
 void    parent_process(t_process *process, t_config *config, t_seed seed_copy) {
-        close(process->fds[0]); 
+        close(process->fds[0]);
         write(process->fds[1], seed_copy.input, seed_copy.size);
         close(process->fds[1]);
 

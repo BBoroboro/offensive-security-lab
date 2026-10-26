@@ -7,9 +7,6 @@ int main(int ac, char **av) {
     (void)ac;
     (void)av;
 
-    // printf("%s\n", av[0]);
-    // printf("%s\n", av[1]);
-
     fgets(input, 100, stdin);
 
     if (strcmp(input, "crashme") == 0) {

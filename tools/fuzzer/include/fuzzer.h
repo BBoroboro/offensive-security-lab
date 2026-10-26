@@ -19,16 +19,16 @@ typedef struct s_seed {
     size_t     size;
 }   t_seed;
 
-typedef struct s_data { //change t_data with t_process
-    int     fds[2];
-    char    *filename; //target better?
-    char    **input_res; // not used
-    int     status;
-    int     timeout;
-    int     crash;
-    unsigned int iteration;
-    pid_t pid;
-}   t_data;
+// typedef struct s_data { //change t_data with t_process
+//     int     fds[2];
+//     char    *filename; //target better?
+//     char    **input_res; // not used
+//     int     status;
+//     int     timeout;
+//     int     crash;
+//     unsigned int iteration;
+//     pid_t pid;
+// }   t_data;
 
 typedef struct s_config {
     char            *target; // or input_file
@@ -41,9 +41,11 @@ typedef struct s_config {
 typedef struct s_process {
     int     fds[2];
     pid_t   pid;
+    FILE    *seed_file;
     int     status;
     int     crash;
-    char    **input_res; // not used
+    char    *input_list; // not used
+    size_t  list_size;
     int     intereation; // to check which process crash or an id?
 }   t_process;
 
@@ -53,7 +55,7 @@ void     check_file(char *filename);
 
 // pipe.c
 void    open_pipes(t_process *process);
-void    close_pipe(t_data *data);
+// void    close_pipe(t_data *data);
 
 // process.c
 void    parent_process(t_process *process, t_config *config, t_seed seed_copy);
