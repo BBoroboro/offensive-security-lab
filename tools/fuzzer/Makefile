@@ -65,7 +65,7 @@ bof1: $(OBJ_VULN4)
 
 
 clean:
-	rm -f $(OBJ) $(OBJ_VULN1) $(OBJ_VULN2) $(OBJ_VULN3)
+	rm -f $(OBJ) $(OBJ_VULN1) $(OBJ_VULN2) $(OBJ_VULN3) $(OBJ_VULN4)
 
 fclean: clean
 	rm -f $(NAME) $(EXEC_VULN) crash_res

@@ -14,6 +14,15 @@
 #include <ctype.h>
 #include <argz.h>
 
+struct argp_option options[] = { // add timeout?? 
+    { "target", 't', "FILE", 0, "file to target", 0 }, // change later
+    { "iterations", 'n', "N", 0, "number of iterations per seed", 0},
+    { "input_file", 'i', "FILE", 0, "file containing multiple seeds\\inputs", 0},
+    { "seed", 's', "SEED", 0, "supply one seed", 0},
+    { 0 }
+};
+
+
 typedef struct s_seed {
     char       *input; // change to data?
     size_t     size;
@@ -49,8 +58,7 @@ typedef struct s_process {
     int     intereation; // to check which process crash or an id?
 }   t_process;
 
-//input_control.c
-// int    init_input(t_input *input, t_data *data, char **args);
+
 void     check_file(char *filename);
 
 // pipe.c

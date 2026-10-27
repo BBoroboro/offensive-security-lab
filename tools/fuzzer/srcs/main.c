@@ -10,11 +10,8 @@
 void    mutate_seed(t_seed seed) { //do not mutate size yet
     int index;
     index = 0;
-    // printf("seed input is %s\n", seed.input); // test
     index = rand() % seed.size;
     seed.input[index] = rand() % 256;
-
-    // printf("%s\n", mutated_seed); // test
 }
 
 static int parse_opt(int key, char *arg, struct argp_state *state) {
@@ -30,8 +27,8 @@ static int parse_opt(int key, char *arg, struct argp_state *state) {
             errno = 0;
             a->iterations = strtoul(arg, &end, 10);
             // printf("%ld\n", a->iterations);
-            if (errno || *end || end == arg || a->iterations < 1 || a->iterations > 10000)
-                argp_error(state, "--iterations must be a number between 1 and 10000");
+            if (errno || *end || end == arg || a->iterations < 1 || a->iterations > 1000)
+                argp_error(state, "--iterations must be a number between 1 and 1000");
             break;
         case 'i':
             // printf("input file is %s\n", arg);
@@ -96,6 +93,28 @@ int    ft_process(t_process *process, t_config *config, char **envp) {
     return 0;
 }
 
+void    process_list_input(t_config *config, t_process *process, char **envp) {
+        check_file(config->input_file);
+        process->seed_file = fopen(config->input_file, "r"); // check i failed
+        // process.seed_file = NULL;
+        // if (!process.seed_file) {
+        //     fprintf(stderr, "Failed to open file '%s'\n", config.input_file);
+        //     exit(1);
+        // }
+
+        int nread = 0;
+        while((nread = getline(&config->seed.input, &process->list_size, process->seed_file)) != -1) {
+            printf("seed is %s", config->seed.input);
+            config->seed.size = strlen(config->seed.input);
+            ft_process(process, config, envp);
+        }
+        
+        free(config->seed.input);
+        fclose(process->seed_file);
+}
+
+
+
 
 int main(int ac, char** av, char** envp) {
     t_config    config = {0};
@@ -103,41 +122,19 @@ int main(int ac, char** av, char** envp) {
     srand(time(NULL));
     config.timeout = 1; // change later
 
-    struct argp_option options[] = { // add timeout?? 
-        { "target", 't', "FILE", 0, "file to target", 0 }, // change later
-        { "iterations", 'n', "N", 0, "number of iterations per seed", 0},
-        { "input_file", 'i', "FILE", 0, "file containing multiple seeds\\inputs", 0},
-        { "seed", 's', "SEED", 0, "supply one seed", 0},
-        { 0 }
-    };
 
     struct argp argp = { options, parse_opt, 0, "Mandatory flags: -t, -n, -i or -s", 0, 0, 0 };
-
     argp_parse(&argp, ac, av, 0, 0, &config);
     
     memset(&process, 0, sizeof(t_process)); 
 
     check_file(config.target); // put in parse opt??
     if (config.input_file != NULL) {
-        check_file(config.input_file);
-        process.seed_file = fopen(config.input_file, "r"); // check i failed
-        printf("opening seed file\n"); // test
-
-        // int i = getline(&process.input_list, &process.list_size, process.seed_file);
-        int nread = 0;
-        while((nread = getline(&config.seed.input, &process.list_size, process.seed_file)) != -1) {
-            printf("seed is %s", config.seed.input);
-            config.seed.size = strlen(config.seed.input);
-            ft_process(&process, &config, envp);
-        }
-        
-        free(config.seed.input);
-        fclose(process.seed_file);
+        process_list_input(&config, &process, envp);
     }
     else
         ft_process(&process, &config, envp);
 
     // ft_free_all(&data, &input);
-
     return 0; 
 }

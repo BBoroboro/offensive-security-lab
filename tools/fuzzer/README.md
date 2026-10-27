@@ -14,6 +14,9 @@ A lightweight, mutation-based fuzzer written in C to test program robustness aga
 
 ## Usage
 
+- **make** to compile fuzzer
+- **make vuln** to compile vulnerable programs in 'vuln_src'
+
 ```bash
 ./fuzzer --help
 ```

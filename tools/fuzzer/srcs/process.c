@@ -36,20 +36,6 @@ void    save_crach(t_process *process, t_seed seed) { // not correct name
     fclose(file);
 }
 
-// void    save_crach(t_seed seed) { // not correct name
-//     FILE *file;
-
-//     file = fopen("crash_1", "w"); // check if failed
-//     fputs("The target program crahed!\n", file);
-//     fputs("Input: ---", file);
-//     fwrite(seed.input, 1, seed.size, file);
-//     fputs("---\n", file);
-//     fputs("Length: ", file);
-//     fprintf(file, "%ld", seed.size);
-//     fputs("\n------------\n", file);
-//     fclose(file);
-// }
-
 void    child_process(t_process *process, t_config *config, char **envp) { 
         dup2(process->fds[0], STDIN_FILENO); // check error
         close(process->fds[0]);
