@@ -52,11 +52,16 @@ Run the fuzzer using seeds stored in a file:
 4. Monitor process termination and handle hangs.
 5. Record detected crashes for further investigation.
 
-## Current Limitations
+## Current Limitations & fix
 
 - Mutations do not currently change the size of the original seed.
 - Mutation strategies are currently random rather than coverage-guided.
 - Crash analysis and input minimization are not yet implemented.
+
+### Fix
+- seeds from .txt keep the ending '\n'
+- need to fix all error checks (fopen, fork, etc) NOT SECURE FOR NOW
+
 
 ## Roadmap
 
@@ -64,6 +69,8 @@ Run the fuzzer using seeds stored in a file:
 - Improve process management and execution monitoring.
 - Enrich crash reports to facilitate reproduction and analysis.
 - Explore more advanced mutation strategies.
+
+
 
 
 <!-- 
