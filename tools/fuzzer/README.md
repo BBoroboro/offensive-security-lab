@@ -1,10 +1,75 @@
-to compile vuln1.c
-cc -Wall -Werror -Wextra vuln1.c -o vuln1
+
+# C Fuzzer
+
+A lightweight, mutation-based fuzzer written in C to test program robustness against modified inputs and identify potential crashes.
+
+## Features
+
+- **Seed-based fuzzing:** Load multiple seeds from an input file or provide a single seed directly.
+- **Mutation-based testing:** Apply random mutations to seeds across configurable iterations.
+- **Process isolation:** Use `fork()` to execute the target in child processes.
+- **Crash detection:** Monitor child process termination with `waitpid()` and record detected crashes.
+- **Hang handling:** Handle executions that exceed the expected runtime.
+- **Crash logging:** Save information about detected crashes for further analysis.
+
+## Usage
+
+```bash
+./fuzzer --help
+```
+
+### Options
+
+| Option | Description |
+|---|---|
+| `-t, --target=FILE` | Target program to test |
+| `-i, --input_file=FILE` | File containing multiple seeds or inputs |
+| `-s, --seed=SEED` | Provide a single seed |
+| `-n, --iterations=N` | Number of iterations per seed |
+| `-?, --help` | Display help |
+
+**Required options:** `-t` and `-n`, plus either `-i` or `-s`.
+
+### Examples
+
+Run the fuzzer against a target using a single seed:
+
+```bash
+./fuzzer -t ./target -s "test" -n 100
+```
+
+Run the fuzzer using seeds stored in a file:
+
+```bash
+./fuzzer -t ./target -i seeds.txt -n 100
+```
+
+## How It Works
+
+1. Load one or more initial seeds.
+2. Generate mutated inputs using random mutations.
+3. Execute the target in an isolated child process.
+4. Monitor process termination and handle hangs.
+5. Record detected crashes for further investigation.
+
+## Current Limitations
+
+- Mutations do not currently change the size of the original seed.
+- Mutation strategies are currently random rather than coverage-guided.
+- Crash analysis and input minimization are not yet implemented.
+
+## Roadmap
+
+- Add variable-length mutations, including insertion and deletion of bytes.
+- Improve process management and execution monitoring.
+- Enrich crash reports to facilitate reproduction and analysis.
+- Explore more advanced mutation strategies.
 
 
+<!-- 
 
-cc -Wall -Werror -Wextra main.c -o fuzzer
 
+###################
 
 
 ROADMAP:
@@ -48,4 +113,4 @@ Priorité 4 — Améliorer la gestion des processus et les résultats
 
 Pense notamment aux timeouts pour les programmes qui se bloquent, à la gestion propre des processus enfants et à la conservation des entrées qui provoquent un crash. Pour chaque crash, enregistrer la seed mutée, le signal et quelques métadonnées facilitera la reproduction du problème.
 
-À terme, une fonctionnalité particulièrement intéressante serait la réduction d'une entrée qui provoque un crash afin d'obtenir un cas de test minimal.
+À terme, une fonctionnalité particulièrement intéressante serait la réduction d'une entrée qui provoque un crash afin d'obtenir un cas de test minimal. -->
