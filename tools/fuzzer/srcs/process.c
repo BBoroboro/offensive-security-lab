@@ -6,20 +6,49 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
+void    print_header(FILE *file) {
+    fputs("\t\t\t\t####################################\n", file);
+    fputs("\t\t\t\t#    The target program crahed!    #\n", file);
+    fputs("\t\t\t\t####################################\n\n\n", file);
+}
 
-void    save_crach(t_seed seed) { // not correct name
+void    save_crach(t_process *process, t_seed seed) { // not correct name
     FILE *file;
 
-    file = fopen("crash_1", "w"); // check if failed
-    fputs("The target program crahed!\n", file);
-    fputs("Input: ---", file);
+    if (process->crash == 0) {
+        file = fopen("crash_res", "w"); // check if failed
+        // fputs("The target program crahed!\n", file);
+        print_header(file);
+    }
+    else
+        file = fopen("crash_res", "a"); // check if failed
+    process->crash++;
+
+
+    fputs("\n\n=========================\n\n", file);
+    fprintf(file, "CRASH N° %d :\n\n", process->crash);
+    fputs("SEED: ---", file);
     fwrite(seed.input, 1, seed.size, file);
-    fputs("---\n", file);
-    fputs("Length: ", file);
-    fprintf(file, "%ld", seed.size);
-    fputs("\n------------\n", file);
+    fputs("---\n\n", file);
+    fputs("SEED LENGTH: ", file);
+    fprintf(file, "%ld", seed.size); 
+    fputs("\n\n=========================\n\n", file);
     fclose(file);
 }
+
+// void    save_crach(t_seed seed) { // not correct name
+//     FILE *file;
+
+//     file = fopen("crash_1", "w"); // check if failed
+//     fputs("The target program crahed!\n", file);
+//     fputs("Input: ---", file);
+//     fwrite(seed.input, 1, seed.size, file);
+//     fputs("---\n", file);
+//     fputs("Length: ", file);
+//     fprintf(file, "%ld", seed.size);
+//     fputs("\n------------\n", file);
+//     fclose(file);
+// }
 
 void    child_process(t_process *process, t_config *config, char **envp) { 
         dup2(process->fds[0], STDIN_FILENO); // check error
@@ -52,7 +81,8 @@ void    parent_process(t_process *process, t_config *config, t_seed seed_copy) {
                     printf("exit status: %d\n", WEXITSTATUS(process->status)); // test
                 if (WIFSIGNALED(process->status)) {
                     printf("signal: %d\n", WTERMSIG(process->status)); // test
-                    save_crach(seed_copy); // correct later
+                    save_crach(process, seed_copy);
+                    // save_crach(seed_copy); // correct later
                 }
                 break;
             }

@@ -43,19 +43,24 @@ $(NAME): $(OBJ)
 vuln: 	$(EXEC_VULN)
 
 vuln1: $(OBJ_VULN1)
-	$(CC) $(CFLAGS) $(OBJ_VULN1) -o $@
+	$(CC) $(VULN_CFLAGS) $(VULN_LDFLAGS) $(OBJ_VULN1) -o $@
 
 vuln2: $(OBJ_VULN2)
-	$(CC) $(CFLAGS) $(OBJ_VULN2) -o $@
+	$(CC) $(VULN_CFLAGS) $(VULN_LDFLAGS) $(OBJ_VULN2) -o $@
 
 vuln3: $(OBJ_VULN3)
-	$(CC) $(CFLAGS) $(OBJ_VULN3) -o $@
+	$(CC) $(VULN_CFLAGS) $(VULN_LDFLAGS) $(OBJ_VULN3) -o $@
 
 bof1: $(OBJ_VULN4)
-	$(CC) $(OBJ_VULN4) -o $@
+	$(CC) $(VULN_CFLAGS) $(VULN_LDFLAGS) $(OBJ_VULN4) -o $@
 
-%.o: %.c
+# Compilation des fichiers du fuzzer
+./srcs/%.o: ./srcs/%.c
 	$(CC) $(CFLAGS) $(INCLUDES) -c $< -o $@
+
+# Compilation des programmes vulnerables
+./vuln_src/%.o: ./vuln_src/%.c
+	$(CC) $(VULN_CFLAGS) -c $< -o $@
 
 
 
@@ -63,7 +68,7 @@ clean:
 	rm -f $(OBJ) $(OBJ_VULN1) $(OBJ_VULN2) $(OBJ_VULN3)
 
 fclean: clean
-	rm -f $(NAME) $(EXEC_VULN)
+	rm -f $(NAME) $(EXEC_VULN) crash_res
 
 re: fclean all
 

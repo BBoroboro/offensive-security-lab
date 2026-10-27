@@ -1,20 +1,34 @@
 #include <stdio.h>
 #include <string.h>
 
-int main(int ac, char **av) {
-    char input[10];
+// int main(int ac, char **av) {
+//     char input[10];
 
-    (void)ac;
-    (void)av;
+//     (void)ac;
+//     (void)av;
 
-    fgets(input, 100, stdin);
+//     fgets(input, 100, stdin);
 
-    if (strcmp(input, "crashme") == 0) {
-    // if (strcmp(av[1], "crashme\n") == 0) {
-        printf("BOOM! Crash triggered.\n");
-        *(int*)0 = 0;  // segmentation fault
-    } else {
-        printf("Safe input: %s\n", input);
-    }
+//     if (strcmp(input, "crashme") == 0) {
+//     // if (strcmp(av[1], "crashme\n") == 0) {
+//         printf("BOOM! Crash triggered.\n");
+//         *(int*)0 = 0;  // segmentation fault
+//     } 
+//     else {
+//         printf("Safe input: %s\n", input);
+//     }
+//     return 0;
+// }
+void sup() {
+    printf("Hey dude ! Waaaaazzaaaaaaaa ?!\n");
+}
+ 
+int main()
+{
+    // int var;
+    void (*func)()=sup;
+    char buf[12];
+    fgets(buf,133,stdin);
+    func();
     return 0;
 }
