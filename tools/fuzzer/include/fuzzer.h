@@ -3,6 +3,7 @@
 
 # define READ 0
 # define WRITE 1
+# define TIMEOUT 1
 
 #include <sys/types.h>
 #include <unistd.h>
@@ -14,30 +15,11 @@
 #include <ctype.h>
 #include <argz.h>
 
-struct argp_option options[] = { // add timeout?? 
-    { "target", 't', "FILE", 0, "file to target", 0 }, // change later
-    { "iterations", 'n', "N", 0, "number of iterations per seed", 0},
-    { "input_file", 'i', "FILE", 0, "file containing multiple seeds\\inputs", 0},
-    { "seed", 's', "SEED", 0, "supply one seed", 0},
-    { 0 }
-};
-
 
 typedef struct s_seed {
-    char       *input; // change to data?
+    unsigned char       *input; // change to data?
     size_t     size;
 }   t_seed;
-
-// typedef struct s_data { //change t_data with t_process
-//     int     fds[2];
-//     char    *filename; //target better?
-//     char    **input_res; // not used
-//     int     status;
-//     int     timeout;
-//     int     crash;
-//     unsigned int iteration;
-//     pid_t pid;
-// }   t_data;
 
 typedef struct s_config {
     char            *target; // or input_file
@@ -50,12 +32,12 @@ typedef struct s_config {
 typedef struct s_process {
     int     fds[2];
     pid_t   pid;
-    FILE    *seed_file;
+    FILE    *seed_file; // remove, pretty useless after all, no need to keep it after reading
     int     status;
     int     crash;
     char    *input_list; // not used
     size_t  list_size;
-    int     intereation; // to check which process crash or an id?
+    int     interation; // to check which process crash or an id?
 }   t_process;
 
 
@@ -68,6 +50,8 @@ void    open_pipes(t_process *process);
 // process.c
 void    parent_process(t_process *process, t_config *config, t_seed seed_copy);
 void    child_process(t_process *process, t_config *config, char **envp);
+int    ft_process(t_process *process, t_config *config, char **envp);
+void    process_list_input(t_config *config, t_process *process, char **envp);
 
 // free.c
 // void    ft_free_all(t_data *data, t_input *input);

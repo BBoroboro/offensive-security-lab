@@ -7,13 +7,6 @@
 
 #include "fuzzer.h"
 
-void    mutate_seed(t_seed seed) { //do not mutate size yet
-    int index;
-    index = 0;
-    index = rand() % seed.size;
-    seed.input[index] = rand() % 256;
-}
-
 static int parse_opt(int key, char *arg, struct argp_state *state) {
     t_config *a = state->input; 
     char *end;
@@ -34,9 +27,9 @@ static int parse_opt(int key, char *arg, struct argp_state *state) {
             // printf("input file is %s\n", arg);
             a->input_file = arg;
             break;
-        case 's':
-            a->seed.input = arg;
-            a->seed.size = strlen(arg);
+        case 's': // change to accept binary stdin
+            a->seed.input = (unsigned char *)arg; //change 
+            a->seed.size = strlen(arg); // change
             break;
         case ARGP_KEY_ARG:
             argp_error(state, "unexpected argument '%s'", arg);
@@ -55,73 +48,20 @@ static int parse_opt(int key, char *arg, struct argp_state *state) {
     return 0;
 }
 
-int  copy_seed(t_seed *seed_copy, t_config *config) {
-    seed_copy->size = config->seed.size;
-    seed_copy->input = malloc(seed_copy->size ? seed_copy->size : 1);
-    if (!seed_copy->input) 
-        return 1; // change later
-    memcpy(seed_copy->input, config->seed.input, seed_copy->size);
-    return 0;
-}
-
-int    ft_process(t_process *process, t_config *config, char **envp) {
-    for (int i = 0; i < config->iterations; i++) {
-        t_seed seed_copy;
-        if (copy_seed(&seed_copy, config))
-            return 1; // error msg
-
-        if (i >= 1) {
-            mutate_seed(seed_copy);
-        }
-
-        open_pipes(process);
-        process->pid = fork();
-        if (process->pid == -1) { // clean better what if we are in the middle of the process
-            perror("fork"); 
-            return 1;
-        }
-        if (process->pid == 0) {
-            child_process(process, config, envp);
-        }
-        else {
-            parent_process(process, config, seed_copy);
-        }
-        // if(mutated_seed != NULL)
-        free(seed_copy.input);
-        seed_copy.input = NULL;
-    }
-    return 0;
-}
-
-void    process_list_input(t_config *config, t_process *process, char **envp) {
-        check_file(config->input_file);
-        process->seed_file = fopen(config->input_file, "r"); // check i failed
-        // process.seed_file = NULL;
-        // if (!process.seed_file) {
-        //     fprintf(stderr, "Failed to open file '%s'\n", config.input_file);
-        //     exit(1);
-        // }
-
-        int nread = 0;
-        while((nread = getline(&config->seed.input, &process->list_size, process->seed_file)) != -1) {
-            printf("seed is %s", config->seed.input);
-            config->seed.size = strlen(config->seed.input);
-            ft_process(process, config, envp);
-        }
-        
-        free(config->seed.input);
-        fclose(process->seed_file);
-}
-
-
-
-
 int main(int ac, char** av, char** envp) {
     t_config    config = {0};
-    t_process   process; 
+    t_process   process;
     srand(time(NULL));
-    config.timeout = 1; // change later
+    if (!config.timeout)
+        config.timeout = TIMEOUT; // change later, add flag
 
+    struct argp_option options[] = { // add timeout?? 
+        { "target", 't', "FILE", 0, "file to target", 0 }, // change later
+        { "iterations", 'n', "N", 0, "number of iterations per seed", 0},
+        { "input_file", 'i', "FILE", 0, "file containing multiple seeds\\inputs", 0},
+        { "seed", 's', "SEED", 0, "supply one seed", 0},
+        { 0 }
+    };
 
     struct argp argp = { options, parse_opt, 0, "Mandatory flags: -t, -n, -i or -s", 0, 0, 0 };
     argp_parse(&argp, ac, av, 0, 0, &config);
