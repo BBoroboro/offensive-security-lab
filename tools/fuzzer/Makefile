@@ -35,10 +35,12 @@ RM = rm -f
 AR = ar rc
 INCLUDES = -Iinclude
 
+# sudo apt install libcjson1 libcjson-dev 
+
 all:		${NAME}
 
 $(NAME): $(OBJ)
-	$(CC) $(CFLAGS) $(OBJ) -o $(NAME)
+	$(CC) $(CFLAGS) $(OBJ) -o $(NAME) -lcjson
 
 vuln: 	$(EXEC_VULN)
 
@@ -68,7 +70,7 @@ clean:
 	rm -f $(OBJ) $(OBJ_VULN1) $(OBJ_VULN2) $(OBJ_VULN3) $(OBJ_VULN4)
 
 fclean: clean
-	rm -f $(NAME) $(EXEC_VULN) crash_res
+	rm -f $(NAME) $(EXEC_VULN) crash_out data.json
 
 re: fclean all
 

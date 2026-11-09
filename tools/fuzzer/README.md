@@ -62,7 +62,7 @@ Run the fuzzer using seeds stored in a file:
 - Crash analysis and input minimization are not yet implemented.
 
 ### Fix
-- seeds from .txt keep the ending '\n'
+- work on the seed treatments
 - need to fix all error checks (fopen, fork, etc) NOT SECURE FOR NOW
 
 

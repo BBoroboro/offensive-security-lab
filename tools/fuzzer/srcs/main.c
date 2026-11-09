@@ -66,11 +66,12 @@ int main(int ac, char** av, char** envp) {
     struct argp argp = { options, parse_opt, 0, "Mandatory flags: -t, -n, -i or -s", 0, 0, 0 };
     argp_parse(&argp, ac, av, 0, 0, &config);
     
-    memset(&process, 0, sizeof(t_process)); 
+    memset(&process, 0, sizeof(t_process));
+
 
     check_file(config.target); // put in parse opt??
     if (config.input_file != NULL) {
-        process_list_input(&config, &process, envp);
+        process_corpus_input(&config, &process, envp);
     }
     else
         ft_process(&process, &config, envp);

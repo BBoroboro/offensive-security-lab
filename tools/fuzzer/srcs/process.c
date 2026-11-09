@@ -23,6 +23,34 @@ int  copy_seed(t_seed *seed_copy, t_config *config) {
 }
 
 
+int    output_json(t_process *process, t_seed seed) {
+    cJSON   *root = cJSON_CreateObject();
+    const char * res = (const char * const)seed.input;
+    cJSON_AddNumberToObject(root, "crash n°", process->crash);
+    cJSON_AddStringToObject(root, "seed", res);
+    cJSON_AddNumberToObject(root, "exit_signal", process->status);
+    cJSON_AddNumberToObject(root, "seed_size", seed.size);
+
+    char *json_output = cJSON_Print(root);
+
+    FILE *fp;
+    if (process->crash == 0)
+        fp = fopen("data.json", "w");
+    else
+        fp = fopen("data.json", "a");
+    if (fp == NULL) {
+        printf("Error: Unable to open data.json\n"); // change later
+        return 1;
+    }
+    printf("JSON OUTPUT IS %s\n", json_output);
+    fputs(json_output, fp);
+    fclose(fp);
+
+    cJSON_free(json_output);
+    cJSON_Delete(root);
+    return 0;
+}
+
 void    print_header(FILE *file) {
     fputs("\t\t\t\t####################################\n", file);
     fputs("\t\t\t\t#    The target program crahed!    #\n", file);
@@ -33,12 +61,12 @@ void    save_crach(t_process *process, t_seed seed) { // not correct name
     FILE *file;
 
     if (process->crash == 0) {
-        file = fopen("crash_res", "w"); // check if failed
+        file = fopen("crash_out", "w"); // check if failed
         // fputs("The target program crahed!\n", file);
         print_header(file);
     }
     else
-        file = fopen("crash_res", "a"); // check if failed
+        file = fopen("crash_out", "a"); // check if failed
     process->crash++;
 
 
@@ -86,6 +114,7 @@ void    parent_process(t_process *process, t_config *config, t_seed seed_copy) {
                 if (WIFSIGNALED(process->status)) {
                     printf("signal: %d\n", WTERMSIG(process->status)); // test
                     save_crach(process, seed_copy);
+                    output_json(process, seed_copy);
                     // save_crach(seed_copy); // correct later
                 }
                 break;
@@ -131,7 +160,7 @@ int    ft_process(t_process *process, t_config *config, char **envp) {
     return 0;
 }
 
-void    process_list_input(t_config *config, t_process *process, char **envp) {
+void    process_corpus_input(t_config *config, t_process *process, char **envp) {
         char    *line;
         size_t  capacity;
         ssize_t nread;

@@ -14,6 +14,7 @@
 #include <argp.h>
 #include <ctype.h>
 #include <argz.h>
+#include <cjson/cJSON.h>
 
 
 typedef struct s_seed {
@@ -51,7 +52,7 @@ void    open_pipes(t_process *process);
 void    parent_process(t_process *process, t_config *config, t_seed seed_copy);
 void    child_process(t_process *process, t_config *config, char **envp);
 int    ft_process(t_process *process, t_config *config, char **envp);
-void    process_list_input(t_config *config, t_process *process, char **envp);
+void    process_corpus_input(t_config *config, t_process *process, char **envp);
 
 // free.c
 // void    ft_free_all(t_data *data, t_input *input);
